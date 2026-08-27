@@ -15,6 +15,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       password: decodeURIComponent(url.password),
       database: url.pathname.replace(/^\//, ''),
       connectionLimit: 5,
+      allowPublicKeyRetrieval: true,
     });
 
     super({ adapter });
