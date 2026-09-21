@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { FormEvent } from "react";
 
 
 export default function LoginPage() {
@@ -17,7 +18,10 @@ export default function LoginPage() {
 
 
     // 로그인 함수
-    const handleLogin = async () => {
+    const handleLogin = async (e: FormEvent) => {
+
+        e.preventDefault();
+
         // 입력 값이 없을 경우
         if(!email || !password) {
             alert("이메일과 비밀번호를 입력해주세요.");
@@ -64,17 +68,20 @@ export default function LoginPage() {
     return(
         <main className="min-h-screen flex items-center justify-center bg-gray-100">
 
-            <div className="w-96 rounded-xl bg-white p-8 shadow-lg">
+            <form 
+                className="w-96 rounded-xl bg-white p-8 shadow-lg"
+                onSubmit={handleLogin}
+            >
 
                 {/* 제목 */}
                 <h1 className="mb-6 text-center text-2xl font-bold">
-                    회원가입
+                    로그인
                 </h1>
 
                 {/* ID 입력 */}
                 <input
                     className="mb-4 w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-blue-500"
-                    type="email"
+                    type="text"
                     placeholder="아이디(ID)을 입력하세요."
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -95,8 +102,7 @@ export default function LoginPage() {
                     {/* 로그인 버튼 */}
                     <button
                         className="flex-1 rounded-md bg-blue-500 py-3 text-white hover:bg-blue-600"
-                        type="button"
-                        onClick={handleLogin}
+                        type="submit"
                     >
                         로그인
                     </button>
@@ -110,7 +116,7 @@ export default function LoginPage() {
                         회원가입
                     </button>
                 </div>
-            </div>
+            </form>
         </main>
     );
 }
