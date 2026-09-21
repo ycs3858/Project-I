@@ -1,9 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 
 export default function LoginPage() {
+
+    // 라우터 사용
+    const router = useRouter();
 
     // 이메일 입력 값
     const [email, setEmail] = useState("");
@@ -51,51 +55,57 @@ export default function LoginPage() {
 
         // 응답 확인
         console.log(data);
+
+        // 성공 시 홈으로 이동
+        router.push("/home");
     };
 
 
-    return (
+    return(
         <main className="min-h-screen flex items-center justify-center bg-gray-100">
+
             <div className="w-96 rounded-xl bg-white p-8 shadow-lg">
 
+                {/* 제목 */}
                 <h1 className="mb-6 text-center text-2xl font-bold">
-                    로그인
+                    회원가입
                 </h1>
 
-                {/* 이메일 입력 */}
+                {/* ID 입력 */}
                 <input
                     className="mb-4 w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-blue-500"
                     type="email"
-                    placeholder="이메일(ID)을 입력하세요."
+                    placeholder="아이디(ID)을 입력하세요."
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
 
-                {/* 비밀번호 입력 */}
+                {/* PW 입력 */}
                 <input
-                    className="mb-6 w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-blue-500"
+                    className="mb-4 w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-blue-500"
                     type="password"
-                    placeholder="비밀번호를 입력하세요."
+                    placeholder="비밀번호(PW)을 입력하세요."
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
 
-
+                {/* 버튼 */}
                 <div className="flex gap-3">
 
                     {/* 로그인 버튼 */}
                     <button
-                    className="flex-1 rounded-md bg-blue-500 py-3 text-white hover:bg-blue-600"
-                    type="button"
-                    onClick={handleLogin}
+                        className="flex-1 rounded-md bg-blue-500 py-3 text-white hover:bg-blue-600"
+                        type="button"
+                        onClick={handleLogin}
                     >
                         로그인
                     </button>
 
-                    {/* 회원가입 버튼 */}
+                    {/* 회원가입 */}
                     <button
-                    className="flex-1 rounded-md bg-gray-500 py-3 text-white hover:bg-gray-600"
-                    type="button"
+                        className="flex-1 rounded-md bg-gray-500 py-3 text-white hover:bg-gray-600"
+                        type="button"
+                        onClick={() => router.push("/signup")}
                     >
                         회원가입
                     </button>

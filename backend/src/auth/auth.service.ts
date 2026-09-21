@@ -4,6 +4,8 @@ import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtService } from '@nestjs/jwt';
+import { ConflictException } from "@nestjs/common";
+import { Prisma } from "../../generated/prisma/client";
 
 
 @Injectable()
@@ -22,17 +24,29 @@ export class AuthService {
     // pw 암호화
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // prisma를 통해 user 생성
-    const user = await this.prisma.user.create({
-      data : {
-        email,
-        username,
-        password : hashedPassword,
-      },
-    });
-    
-    const {password: _, ...result } = user;
-    return result;
+    try {
+      // prisma를 통해 user 생성
+      const user = await this.prisma.user.create({
+        data : {
+          email,
+          username,
+          password: hashedPassword,
+        },
+      });
+
+      const {password: _, ...result} = user;
+      return result;
+    } catch (error) {
+      if(
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        throw new ConflictException("이미 사용중인 ID 입니다.");
+      }
+
+      throw error;
+    }
+
   }
 
   // 로그인
