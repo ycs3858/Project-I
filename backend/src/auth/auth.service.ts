@@ -84,6 +84,7 @@ export class AuthService {
     const accessToken = await this.jwtService.signAsync({
       sub: user.id,
       email: user.email,
+      username: user.username,
     });
 
     // 클라이언트에 토큰 반환
