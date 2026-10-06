@@ -198,6 +198,7 @@ export default function HomePage() {
                         <button
                             type = "button"
                             className = "mt-8 w-full rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700"
+                            onClick={() => router.push("/board")}
                         >
                             바로가기 →
                         </button>
