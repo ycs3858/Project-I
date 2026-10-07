@@ -20,5 +20,8 @@ const JwtKey = process.env.JWT_SECRET;
 
   controllers: [AuthController],
   providers: [AuthService, JwtAuthGuard],
+
+  // 다른곳에서도 auth.module를 사용가능하게 하는 내용
+  exports: [JwtAuthGuard, JwtModule],
 })
 export class AuthModule {}
