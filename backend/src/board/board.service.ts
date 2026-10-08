@@ -34,7 +34,18 @@ export class BoardService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} board`;
+    return this.prisma.post.findUnique({
+      where : {
+        id : id,
+      },
+      include : {
+        author : {
+          select : {
+            username : true,
+          },
+        },
+      },
+    });
   }
 
   update(id: number, updateBoardDto: UpdateBoardDto) {
