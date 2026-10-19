@@ -13,7 +13,7 @@ const JwtKey = process.env.JWT_SECRET;
     JwtModule.register({
       secret: JwtKey,
       signOptions: {
-        expiresIn: '5m',
+        expiresIn: '30m',
       },
     }),
   ],
