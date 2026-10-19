@@ -116,6 +116,17 @@ export default function LoginPage() {
                         회원가입
                     </button>
                 </div>
+
+                <div className = "mt-3">
+                    {/* 방문자 게시판 바로가기 */}
+                    <button
+                        className = "w-full rounded-md bg-gray-500 py-3 text-white hover:bg-gray-600"
+                        type = "button"
+                        onClick={() => router.push("/board")}
+                    >
+                        게시판 바로가기
+                    </button>
+                </div>
             </form>
         </main>
     );

@@ -87,7 +87,7 @@ export default function HomePage() {
             {/* 상단 헤더 */}
             <header className = "flex h-20 items-center justify-between border-b bg-white px-8">
 
-                <h1 className = "text-3xl font-blod tracking-tight text-blue-600">
+                <h1 className = "text-3xl font-bold tracking-tight text-blue-600">
                     PROJECT-I
                 </h1>
 
@@ -132,6 +132,7 @@ export default function HomePage() {
                     <button
                         type = "button"
                         className = "h-full px-3 font-semibold text-gray-500 hover:text-blue-600"
+                        onClick={() => router.push("/board")}
                     >
                         게시판
                     </button>

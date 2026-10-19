@@ -3,16 +3,37 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+// 백엔드에서 받아올 게시글 데이터 타입
+type Post = {
+    id : number;
+    title : string;
+    content : string;
+    authorId : number;
+    viewCount : number;
+    createdAt : string;
+    updatedAt : string;
+    author : {
+        username : string;
+    };
+};
+
 export default function BoardPage() {
 
     // 페이지 이동을 위한 라우터
     const router = useRouter();
 
-    // 인증 확인 중
+    // 로그인 상태 확인
     const [loading, setLoading] = useState(true);
 
     // 로그인한 사용자 이름 확인
     const [username, setUsername] = useState("");
+
+    // 게시글 목록
+    const [posts, setPosts] = useState<Post[]>([]);
+
+    // 게시글 목록 조회 상태
+    const [postsLoading, setPostsLoading] = useState(true);
+    const [postsError, setPostsError] = useState("");
 
     // 검색어
     const [search, setSearch] = useState("");
@@ -33,7 +54,9 @@ export default function BoardPage() {
 
             // 토큰이 없는 경우
             if (!accessToken) {
-                router.replace("/login");
+                // router.replace("/login");
+                setUsername("방문자");
+                setLoading(false);
                 return;
             }
 
@@ -75,6 +98,31 @@ export default function BoardPage() {
 
         checkLogin();
     }, [router]);
+
+    // 게시글 조회
+    useEffect(() => {
+        if (loading) return;
+
+        const fetchPosts = async () => {
+            try {
+                const response = await fetch ( "http://localhost:3001/board" );
+
+                if (!response.ok) {
+                    throw new Error( "게시글 목록을 불러오지 못했습니다." );
+                }
+
+                const data : Post[] = await response.json();
+                setPosts(data);
+            } catch (error) {
+                console.error("게시글 조회 오류 :", error);
+                setPostsError("게시글 목록을 불러오지 못했습니다.");
+            } finally {
+                setPostsLoading(false);
+            }
+        };
+
+        fetchPosts();
+    }, [loading]);
 
     // 인증 확인 중
     if (loading) {
@@ -252,6 +300,52 @@ export default function BoardPage() {
                                 <div>조회수</div>
 
                             </div>
+
+                            {/* 게시글 데이터 */}
+                            {postsLoading ? (
+                                <div className = "border-t px-5 py-8 text-center text-gray-500">
+                                    게시글을 불러오는 중입니다.
+                                </div>
+                            ) : postsError ? (
+                                <div className = "border-t px-5 py-8 text-center text-red-500">
+                                    {postsError}
+                                </div>
+                            ) : posts.length === 0 ? (
+                                <div className = 'border-t px-5 py-8 text-center text-gray-500'>
+                                    등록된 게시물이 없습니다.
+                                </div>
+                            ) : (
+                                posts.map((post) => (
+                                    <div
+                                        key={post.id}
+                                        className = "grid grid-cols-[80px_1fr_140px_120px_80px] items-center border-t px-5 py-4 text-center text-sm text-gray-700"
+                                    >
+
+                                        <div>{post.id}</div>
+
+                                        <button
+                                            type = "button"
+                                            className = "w-full truncate px-2 text-left text-gray-700"
+                                            onClick={() => router.push(`/board/${post.id}`)}
+                                        >
+                                            {post.title}
+                                        </button>
+
+                                        <div className = "truncate">
+                                            {post.author.username}
+                                        </div>
+
+                                        <div>
+                                            {new Date(post.createdAt).toLocaleDateString("ko-KR")}
+                                        </div>
+
+                                        <div>
+                                            {post.viewCount}
+                                        </div>
+
+                                    </div>
+                                ))
+                            )}
 
                         </div>
 
