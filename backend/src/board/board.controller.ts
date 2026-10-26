@@ -25,8 +25,9 @@ export class BoardController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBoardDto: UpdateBoardDto) {
-    return this.boardService.update(+id, updateBoardDto);
+  @UseGuards(JwtAuthGuard)
+  update(@Param('id') id: string, @Body() updateBoardDto: UpdateBoardDto, @Request() req,) {
+    return this.boardService.update(+id, updateBoardDto, req.user);
   }
 
   @Delete(':id')
