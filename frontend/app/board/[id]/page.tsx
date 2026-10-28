@@ -25,6 +25,12 @@ export default function BoardDetailPage() {
     // 사용자 이름 : 비회원은 방문자로 표시
     const [username, setUsername] = useState("방문자");
 
+    // 로그인한 사용자 ID
+    const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+
+    // 로그인한 사용자 역할
+    const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
+
     // 게시글 데이터
     const [post, setPost] = useState<Post | null>(null);
 
@@ -52,13 +58,18 @@ export default function BoardDetailPage() {
 
                 // 토큰이 유효하지 않아도 열람은 가능
                 if (!response.ok) {
-                    localStorage.removeItem("asscessToken");
+                    localStorage.removeItem("accessToken");
                     setUsername("방문자");
                     return;
                 }
 
                 const data = await response.json();
                 setUsername(data.username || "방문자");
+
+                // 사용자 ID 저장
+                const userId = data.id ?? data.sub;
+
+                setCurrentUserId( userId != null ? Number(userId) : null );
             
             } catch (err) {
                 console.error("사용자 정보 조회 오류:", err);
@@ -206,14 +217,31 @@ export default function BoardDetailPage() {
             <section className = "px-8 py-10">
 
                 <div className = "mx-auto max-w-4xl">
-                    {/* 목록으로 돌아가기 */}
-                    <button
-                        type = "button"
-                        className = "mb-5 font-semibold text-blue-600 hover:underline"
-                        onClick={() => router.push("/board")}
-                    >
-                        ← 게시글 목록
-                    </button>
+
+                    {/* 목록과 수정버튼 */}
+                    <div className = "mb-5 flex items-center justify-between">
+                        {/* 목록으로 돌아가기 */}
+                        <button
+                            type = "button"
+                            className = "mb-5 font-semibold text-blue-600 hover:underline"
+                            onClick={() => router.push("/board")}
+                        >
+                            ← 게시글 목록
+                        </button>
+
+                        {/* 작성자 본인만 수정 버튼 표시 */}
+                        {currentUserId === post.authorId && (
+                            <button
+                                type = "button"
+                                className = "rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
+                                onClick={() => router.push(`/board/${post.id}/edit`)}
+                            >
+                                수정
+                            </button>
+                        )}
+
+                    </div>
+
 
                     <article className = "rounded-xl bg-white p-8 shadow-md">
                         
