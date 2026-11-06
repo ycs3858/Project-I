@@ -96,7 +96,44 @@ export class BoardService {
   }
 
   // 게시글 삭제
-  remove(id: number) {
-    return `This action removes a #${id} board`;
+  async remove (id: number, user: {sub: number | string},) {
+    // 게시글 존재 여부 확인
+    const post = await this.prisma.post.findUnique({
+      where : {
+        id : id,
+      },
+    });
+
+    if (!post) {throw new NotFoundException("게시글을 찾을 수 없습니다.");}
+
+    // 로그인한 사용자 정보 조회
+    const currentUser = await this.prisma.user.findUnique({
+      where : {
+        id : Number(user.sub),
+      },
+      select : {
+        role : true,
+      },
+    });
+
+
+    // 사용자 계정 존재 확인
+    if (!currentUser) {throw new NotFoundException("사용자 정보를 찾을 수 없습니다.");}
+
+    // 작성자가 본인인지 확인
+    const isAuthor = post.authorId === Number(user.sub);
+
+    // 관리자 확인
+    const isAdmin = currentUser.role === "ADMIN";
+
+    // 작성자 혹은 관리자가 아닌 경우 삭제 거부
+    if (!isAuthor && !isAdmin) {throw new ForbiddenException("게시글을 삭제할 권한이 없습니다.");}
+
+    // 실제 게시글 삭제
+    return this.prisma.post.delete({
+      where : {
+        id : id,
+      },
+    });
   }
 }
