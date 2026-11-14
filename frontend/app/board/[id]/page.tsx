@@ -38,6 +38,12 @@ export default function BoardDetailPage() {
     const [postLoading, setPostLoading] = useState(true);
     const [error, setError] = useState("");
 
+    // 게시글이 삭제 중인지 확인
+    const [deleting, setDeleting] = useState(false);
+
+    // 삭제 오류 메시지
+    const [deleteError, setDeleteError] = useState("");
+
     // 로그인한 경우에만 사용자 이름 확인
     useEffect(() => {
         const fetchUsername = async () => {
@@ -70,6 +76,9 @@ export default function BoardDetailPage() {
                 const userId = data.id ?? data.sub;
 
                 setCurrentUserId( userId != null ? Number(userId) : null );
+
+                // 사용자 역할 저장
+                setCurrentUserRole(data.role ?? null);
             
             } catch (err) {
                 console.error("사용자 정보 조회 오류:", err);
@@ -163,9 +172,21 @@ export default function BoardDetailPage() {
                     PROJECT-I
                 </h1>
 
-                <span className = "text-lg font-semibold text-gray-700">
-                    {username}님
-                </span>
+                {/* 사용자 영역 */}
+                <div className = "flex items-center gap-4">
+
+                    <span className = "text-lg font-semibold text-gray-700">
+                        {username}님
+                    </span>
+
+                    {/* 프로필 버튼 */}
+                    <button
+                        type = "button"
+                        className = "flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 text-xl text-gray-600 hover:bg-gray-300"
+                    >
+                        👤
+                    </button>
+                </div>
             </header>
 
             {/* 메뉴바 */}
@@ -218,7 +239,7 @@ export default function BoardDetailPage() {
 
                 <div className = "mx-auto max-w-4xl">
 
-                    {/* 목록과 수정버튼 */}
+                    {/* 목록과 버튼 */}
                     <div className = "mb-5 flex items-center justify-between">
                         {/* 목록으로 돌아가기 */}
                         <button
@@ -239,6 +260,9 @@ export default function BoardDetailPage() {
                                 수정
                             </button>
                         )}
+
+                        {/* 작성자와 관리자만 삭제 버튼 표시 */}
+                        
 
                     </div>
 
