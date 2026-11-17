@@ -124,6 +124,65 @@ export default function BoardDetailPage() {
         fetchPost();
     }, [id]);
 
+    // 게시글 삭제
+    const handleDelete = async () => {
+        if(!post) return;
+
+        // 삭제 확인
+        const confirmed = window.confirm("정말 삭제하시겠습니까?");
+
+        if (!confirmed) return;
+
+        const accessToken = localStorage.getItem("accessToken");
+
+        // 로그인 토큰 확인
+        if (!accessToken) {
+            router.replace("/login");
+            return;
+        }
+
+        setDeleting(true);
+        setDeleteError("");
+
+        try {
+            const response = await fetch(`http://localhost:3001/board/${post.id}`,
+                {
+                    method : "DELETE",
+                    headers : {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+
+            const data = await response.json().catch(() => null);
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem("accessToken");
+                    setUsername("방문자");
+                    setCurrentUserId(null);
+                    setCurrentUserRole(null);
+                    router.replace("/login");
+                    return;
+                }
+
+                throw new Error (data?.message || "게시글 삭제에 실패했습니다.");
+            }
+
+            // 삭제 성공 시 게시판으로 이동
+            router.push("/board");
+        } catch (err) {
+            console.error("게시글 삭제 오류:", err);
+
+            setDeleteError(
+                err instanceof Error? err.message : "게시글 삭제에 실패했습니다."
+            );
+        
+        } finally {
+            setDeleting(false);
+        }
+    };
+
 
     // 게시글 조회 중
     if (postLoading) {
@@ -250,20 +309,36 @@ export default function BoardDetailPage() {
                             ← 게시글 목록
                         </button>
 
-                        {/* 작성자 본인만 수정 버튼 표시 */}
-                        {currentUserId === post.authorId && (
-                            <button
-                                type = "button"
-                                className = "rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
-                                onClick={() => router.push(`/board/${post.id}/edit`)}
-                            >
-                                수정
-                            </button>
-                        )}
 
-                        {/* 작성자와 관리자만 삭제 버튼 표시 */}
+                        {/* 수정 및 삭제 버튼 */}
+                        <div className="flex items-center gap-3">
+                            {/* 작성자 본인만 수정 버튼 표시 */}
+                            {currentUserId === post.authorId && (
+                                <button
+                                    type = "button"
+                                    className = "rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
+                                    onClick={() => router.push(`/board/${post.id}/edit`)}
+                                >
+                                    수정
+                                </button>
+                            )}
+
+                            {/* 작성자와 관리자만 삭제 버튼 표시 */}
+                            {currentUserId !== null && (currentUserId === post.authorId || currentUserRole === "ADMIN")
+                            &&
+                            (
+                                <button
+                                    type = "button"
+                                    disabled={deleting}
+                                    onClick={handleDelete}
+                                    className = "rounded-lg bg-red-600 px-5 py-3 font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+                                >
+                                    {deleting ? "삭제중..." : "삭제"}
+                                </button>
+                            )}
+
+                        </div>
                         
-
                     </div>
 
 
