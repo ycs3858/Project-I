@@ -1,10 +1,22 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type HeaderProps = {
     username : string;
 };
 
 export default function Header({username} : HeaderProps) {
+
+    const router = useRouter();
+
+    // 로그아웃
+    const handleLogout = () => {
+        localStorage.removeItem("accessToken")
+        router.replace("/login");
+    };
+
     return (
         <header className = "flex h-20 items-center justify-between border-b bg-white px-8">
 
@@ -29,6 +41,15 @@ export default function Header({username} : HeaderProps) {
                     className = "flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 text-xl text-gray-600 hover:bg-gray-300"
                 >
                     👤
+                </button>
+
+                {/* 로그아웃 버튼 */}
+                <button
+                    type = "button"
+                    className = "flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 text-xl text-gray-600 hover:bg-gray-300    "
+                    onClick={handleLogout}
+                >
+                    🚪
                 </button>
             </div>
 

@@ -44,6 +44,12 @@ export default function BoardDetailPage() {
     // 삭제 오류 메시지
     const [deleteError, setDeleteError] = useState("");
 
+    // 로그아웃
+    const handleLogout = () => {
+        localStorage.removeItem("accessToken");
+        router.replace("/login")
+    };
+
     // 로그인한 경우에만 사용자 이름 확인
     useEffect(() => {
         const fetchUsername = async () => {
@@ -244,6 +250,14 @@ export default function BoardDetailPage() {
                         className = "flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 text-xl text-gray-600 hover:bg-gray-300"
                     >
                         👤
+                    </button>
+
+                    <button
+                        type = "button"
+                        className = "flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 text-xl text-gray-600 hover:bg-gray-300"
+                        onClick={handleLogout}
+                    >
+                        🚪
                     </button>
                 </div>
             </header>

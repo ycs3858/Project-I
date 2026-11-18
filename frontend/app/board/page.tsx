@@ -162,6 +162,15 @@ export default function BoardPage() {
                     >
                         👤
                     </button>
+
+                    {/* 로그아웃 버튼 */}
+                    <button
+                        type = "button"
+                        className = "flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 text-xl text-gray-600 hover:bg-gray-300"
+                        onClick={handleLogout}
+                    >
+                        🚪
+                    </button>
                 </div>
 
             </header>

@@ -18,6 +18,12 @@ export default function BoardWritePage() {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
 
+    // 로그아웃
+    const handleLogout = () => {
+        localStorage.removeItem("accessToken");
+        router.replace("/login")
+    };
+
 
     // 로그인 확인
     useEffect(() => {
@@ -154,9 +160,31 @@ export default function BoardWritePage() {
                     PROJECT-I
                 </h1>
 
-                <span className = "text-lg font-semibold text-gray-700">
-                    {username}님
-                </span>
+
+                {/* 사용자 영역 */}
+                <div className = "flex items-center gap-4">
+                    <span className = "text-lg font-semibold text-gray-700">
+                        {username}님
+                    </span>
+                    
+                    {/* 프로필 버튼 */}
+                    <button
+                        type = "button"
+                        className = "flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 text-xl text-gray-600 hover:bg-gray-300"
+                    >
+                        👤
+                    </button>
+
+                    {/* 로그아웃 버튼 */}
+                    <button
+                        type = "button"
+                        className = "flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 text-xl text-gray-600 hover:bg-gray-300"
+                        onClick={handleLogout}
+                    >
+                        🚪
+                    </button>
+
+                </div>
 
             </header>
 

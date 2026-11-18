@@ -85,6 +85,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       username: user.username,
+      role: user.role,
     });
 
     // 클라이언트에 토큰 반환
