@@ -17,6 +17,16 @@ type Post = {
     };
 };
 
+type BoardResponse = {
+    data : Post[];
+    pagination : {
+        page : number;
+        limit : number;
+        total : number;
+        totalPage : number;
+    };
+};
+
 export default function BoardPage() {
 
     // 페이지 이동을 위한 라우터
@@ -111,8 +121,8 @@ export default function BoardPage() {
                     throw new Error( "게시글 목록을 불러오지 못했습니다." );
                 }
 
-                const data : Post[] = await response.json();
-                setPosts(data);
+                const result : BoardResponse = await response.json();
+                setPosts(result.data);
             } catch (error) {
                 console.error("게시글 조회 오류 :", error);
                 setPostsError("게시글 목록을 불러오지 못했습니다.");

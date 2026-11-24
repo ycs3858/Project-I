@@ -19,19 +19,47 @@ export class BoardService {
   }
 
   // 게시글 목록 조회
-  findAll() {
-    return this.prisma.post.findMany({
-      orderBy : {
-        createdAt : "desc",
-      },
-      include : {
-        author : {
-          select : {
-            username : true,
+  async findAll(page: number, limit: number) {
+    
+    // 건너뛸 게시글 수 계산
+    const skip = (page - 1) * limit;
+
+    // 게시글 목록 및 전체 게시글 수 조회
+    const [posts, total] = await this.prisma.$transaction([
+      this.prisma.post.findMany({
+        skip: skip,
+        take: limit,
+
+        // 최신 게시글 먼저 조회
+        orderBy : {
+          createdAt: 'desc',
+        },
+
+        // 작성자 이름도 함께 조회
+        include: {
+          author: {
+            select: {
+              username: true,
+            },
           },
         },
+      }),
+
+      // 전체 게시글 수
+      this.prisma.post.count(),
+    ]);
+
+    // 조회 결과 반환
+    return {
+      data : posts,
+
+      pagination : {
+        page: page,
+        limit: limit,
+        total: total,
+        totalPages: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
   // 게시글 상세 조회
