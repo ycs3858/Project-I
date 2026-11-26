@@ -23,7 +23,7 @@ type BoardResponse = {
         page : number;
         limit : number;
         total : number;
-        totalPage : number;
+        totalPages : number;
     };
 };
 
@@ -40,6 +40,20 @@ export default function BoardPage() {
 
     // 게시글 목록
     const [posts, setPosts] = useState<Post[]>([]);
+
+    // 페이지당 게시글 수
+    const POSTS_PER_PAGE = 10;
+
+    // 현재 페이지
+    const [currentPage, setCurrentPage] = useState(1);
+
+    // 페이지네이션 정보
+    const [pagination, setPagination] = useState<BoardResponse["pagination"]>({
+        page : 1,
+        limit : 10,
+        total : 0,
+        totalPages : 0,
+    });
 
     // 게시글 목록 조회 상태
     const [postsLoading, setPostsLoading] = useState(true);
@@ -114,15 +128,22 @@ export default function BoardPage() {
         if (loading) return;
 
         const fetchPosts = async () => {
+
+            setPostsLoading(true);
+            setPostsError("");
+
             try {
-                const response = await fetch ( "http://localhost:3001/board" );
+                const response = await fetch (`http://localhost:3001/board?page=${currentPage}&limit=${POSTS_PER_PAGE}`);
 
                 if (!response.ok) {
                     throw new Error( "게시글 목록을 불러오지 못했습니다." );
                 }
 
                 const result : BoardResponse = await response.json();
+                // 게시글 목록 저장
                 setPosts(result.data);
+                // 페이지네이션 정보 저장
+                setPagination(result.pagination);
             } catch (error) {
                 console.error("게시글 조회 오류 :", error);
                 setPostsError("게시글 목록을 불러오지 못했습니다.");
@@ -132,7 +153,7 @@ export default function BoardPage() {
         };
 
         fetchPosts();
-    }, [loading]);
+    }, [loading, currentPage]);
 
     // 인증 확인 중
     if (loading) {
@@ -367,6 +388,47 @@ export default function BoardPage() {
                             )}
 
                         </div>
+
+                        {/* 페이지네이션 */}
+                        {!postsLoading && !postsError && pagination.totalPages > 1 && (
+                            <div className="mt-6 flex items-center justify-center gap-2">
+
+                                {/* 이전 페이지 */}
+                                <button
+                                    type = "button"
+                                    disabled={currentPage === 1}
+                                    onClick={()=> setCurrentPage((prev) => Math.max(1, prev - 1))}
+                                    className = "rounded-lg border px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                                >
+                                    이전
+                                </button>
+
+                                {/* 페이지 번호 */}
+                                {Array.from({length : pagination.totalPages},
+                                    (_, index) => index+1).map((page) => (
+                                        <button
+                                            key = {page}
+                                            type = "button"
+                                            onClick={() => setCurrentPage(page)}
+                                            aria-current = {currentPage === page ? "page" : undefined}
+                                            className = {`rounded-lg px-4 py-2 text-sm font-semibold ${currentPage === page ? "bg-blue-600 text-white" : "border border-gray-300 text-gray-600 hover:bg-gray-100"}`}
+                                        >
+                                            {page}
+                                        </button>
+                                    )
+                                )}
+
+                                {/* 다음 페이지 */}
+                                <button
+                                    type = "button"
+                                    disabled={currentPage === pagination.totalPages}
+                                    onClick={() => setCurrentPage((prev) => Math.min(pagination.totalPages, prev + 1))}
+                                    className = "rounded-lg border px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                                >
+                                    다음
+                                </button>
+                            </div>
+                        )}
 
                     </div>
 
